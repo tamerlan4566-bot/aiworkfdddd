@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Чертоги Разума — Сейф и Детективная доска</title>
+    <meta name="theme-color" content="#090b12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+
+    <!-- Локальный CryptoJS AES-256 (полная офлайн-автономность) -->
+    <script src="./crypto-js.min.js"></script>
+    <!-- Собственные стили -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <!-- ==================== ФАСАД: КАЛЬКУЛЯТОР ==================== -->
+    <div id="calculator-facade">
+        <div class="calc-box neon-border">
+            <div class="calc-topbar">
+                <span>CALC // SYS.v4.2</span>
+                <span class="status" id="calc-status">STD MODE</span>
+            </div>
+
+            <!-- Экран -->
+            <div class="calc-screen">
+                <div class="calc-history" id="calc-history"></div>
+                <div class="calc-display" id="calc-display">0</div>
+            </div>
+
+            <!-- Кнопки (data-calc вместо inline onclick) -->
+            <div class="calc-grid">
+                <button data-calc="clear"     class="calc-btn-clear">C</button>
+                <button data-calc="backspace"  class="calc-btn-bs">⌫</button>
+                <button data-calc="/"          class="calc-btn-op">÷</button>
+
+                <button data-calc="7" class="calc-btn-num">7</button>
+                <button data-calc="8" class="calc-btn-num">8</button>
+                <button data-calc="9" class="calc-btn-num">9</button>
+                <button data-calc="*" class="calc-btn-op">×</button>
+
+                <button data-calc="4" class="calc-btn-num">4</button>
+                <button data-calc="5" class="calc-btn-num">5</button>
+                <button data-calc="6" class="calc-btn-num">6</button>
+                <button data-calc="-" class="calc-btn-op">−</button>
+
+                <button data-calc="1" class="calc-btn-num">1</button>
+                <button data-calc="2" class="calc-btn-num">2</button>
+                <button data-calc="3" class="calc-btn-num">3</button>
+                <button data-calc="+" class="calc-btn-op">+</button>
+
+                <button data-calc="0" class="calc-btn-num calc-btn-zero">0</button>
+                <button data-calc="." class="calc-btn-num">.</button>
+                <button data-calc="eval" class="calc-btn-eq">=</button>
+            </div>
+
+            <p class="pin-hint">Введите 4-значный PIN и нажмите «=» для входа</p>
+        </div>
+    </div>
+
+    <!-- ==================== ОСНОВНОЙ ИНТЕРФЕЙС: ЧЕРТОГИ РАЗУМА ==================== -->
+    <div id="vault-app">
+        <!-- Шапка -->
+        <header class="vault-header">
+            <div class="left">
+                <div class="pulse-dot"></div>
+                <h1 class="title neon-text-cyan">
+                    ЧЕРТОГИ РАЗУМА <small>[AES-256]</small>
+                </h1>
+            </div>
+
+            <div class="header-actions">
+                <button id="btn-open-modal" class="btn-add">+ Улика</button>
+                <button id="link-mode-btn" class="btn-link">🔗 Нить: ВЫКЛ</button>
+                <button id="btn-export" class="btn-secondary" title="Скачать зашифрованный JSON-бэкап">⬇ Бэкап</button>
+                <label class="btn-secondary" title="Загрузить JSON-бэкап" style="cursor:pointer">
+                    ⬆ Импорт
+                    <input type="file" id="import-file" accept=".json" hidden>
+                </label>
+                <button id="btn-lock" class="btn-lock">🔒 Закрыть</button>
+                <button id="btn-sidebar-toggle" class="btn-sidebar-toggle" title="Информация">☰ Инфо</button>
+            </div>
+        </header>
+
+        <!-- Рабочая область -->
+        <div class="workspace">
+            <!-- Доска -->
+            <div id="board-container">
+                <div id="board-canvas">
+                    <svg id="strings-layer"></svg>
+                    <div id="cards-layer"></div>
+                </div>
+            </div>
+
+            <!-- Затемнение фона за шторкой (мобильное) -->
+            <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+            <!-- Боковая панель -->
+            <aside id="sidebar" class="sidebar">
+                <div>
+                    <div class="sidebar-section">
+                        <h2 class="sidebar-heading">Сводка дела</h2>
+                        <div class="stat-box">
+                            <div class="stat-row">
+                                <span class="stat-label">Улик на доске:</span>
+                                <span class="stat-value-cyan" id="stat-cards">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Красных нитей:</span>
+                                <span class="stat-value-rose" id="stat-links">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Шифрование:</span>
+                                <span class="stat-value-green">AES-256</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h2 class="sidebar-heading">Управление</h2>
+                        <ul class="help-list">
+                            <li>• <strong>Перемещение:</strong> тяни любую карточку мышью или пальцем.</li>
+                            <li>• <strong class="hl-rose">Красная нить:</strong> включи режим «Нить» и кликни по двум карточкам по очереди.</li>
+                            <li>• <strong class="hl-cyan">Удалить нить:</strong> в режиме «Нить» кликни по уже связанной паре.</li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h2 class="sidebar-heading">Смена PIN-кода</h2>
+                        <div class="pin-change-row">
+                            <input type="password" id="new-pin-input" maxlength="4" placeholder="4 цифры">
+                            <button id="btn-change-pin">OK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="danger-zone">
+                    <p>Экстренное уничтожение локальных данных и сброс PIN на 0000:</p>
+                    <button id="btn-hard-reset" class="btn-danger">⚠ ПОЛНЫЙ СБРОС СЕЙФА</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- ==================== МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ УЛИКИ ==================== -->
+    <div id="add-modal" class="modal-overlay neon-border">
+        <div class="modal-box neon-border">
+            <div class="modal-header">
+                <h3>Новая улика в Чертоги</h3>
+                <button class="modal-close" id="modal-close-btn">✕</button>
+            </div>
+
+            <div class="form-group">
+                <label for="card-title">Заголовок / Объект</label>
+                <input type="text" id="card-title" placeholder="Например: Подозреваемый №1 или Ключ">
+            </div>
+            <div class="form-group">
+                <label for="card-desc">Заметка / Детали</label>
+                <textarea id="card-desc" rows="3" placeholder="Зашифрованные заметки, координаты, факты..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="card-image">Прикрепить фото (сжимается автоматически)</label>
+                <input type="file" id="card-image" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="card-tag">Маркер приоритета</label>
+                <select id="card-tag">
+                    <option value="cyan">🔵 Информация / Факт</option>
+                    <option value="rose">🔴 Главная улика / Угроза</option>
+                    <option value="amber">🟡 Зацепка / Гипотеза</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" id="modal-cancel-btn">Отмена</button>
+                <button class="btn-modal-save" id="modal-save-btn">Добавить на доску</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вся логика -->
+    <script src="./app.js"></script>
+</body>
+</html>
