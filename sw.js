@@ -1,5 +1,5 @@
 // Версионированный кэш
-const CACHE_NAME = 'mind-palace-v1';
+const CACHE_NAME = 'mind-palace-v2';
 
 // Список всех статических ресурсов для предварительного кэширования
 const STATIC_ASSETS = [
