@@ -1,0 +1,19 @@
+{
+  "name": "Калькулятор // Чертоги Разума",
+  "short_name": "Калькулятор",
+  "description": "Офлайн-сейф заметок и детективная доска с локальным шифрованием AES-256",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050508",
+  "theme_color": "#090b12",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
