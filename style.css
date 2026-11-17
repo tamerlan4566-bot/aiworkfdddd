@@ -1,0 +1,714 @@
+/* ===== Чертоги Разума — style.css ===== */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+/* ---------- RESET / GLOBAL ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: #050508;
+    color: #e2e8f0;
+    overflow: hidden;
+    user-select: none;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- НЕОНОВЫЕ ЭФФЕКТЫ ---------- */
+.neon-border {
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.12),
+                inset 0 0 10px rgba(56, 189, 248, 0.05);
+}
+.neon-text-cyan {
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+}
+.neon-text-red {
+    text-shadow: 0 0 10px rgba(244, 63, 94, 0.8);
+}
+
+/* ---------- СКРОЛЛБАР ---------- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #090a10;
+}
+::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #38bdf8;
+}
+
+/* ==================== ФАСАД: КАЛЬКУЛЯТОР ==================== */
+#calculator-facade {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #050508;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+#calculator-facade.hidden { display: none; }
+
+.calc-box {
+    width: 100%;
+    max-width: 320px;
+    background: #0d1019;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,.8);
+}
+.calc-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .75rem;
+    font-size: .7rem;
+    color: #64748b;
+}
+.calc-topbar .status { color: #38bdf8; }
+
+.calc-screen {
+    background: #06080e;
+    border: 1px solid #1e293b;
+    border-radius: .75rem;
+    padding: .75rem;
+    text-align: right;
+    margin-bottom: 1rem;
+}
+.calc-history {
+    font-size: .7rem;
+    color: #64748b;
+    height: 1rem;
+    overflow: hidden;
+}
+.calc-display {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: .08em;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .625rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.calc-grid button {
+    padding: .75rem 0;
+    border-radius: .75rem;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: #e2e8f0;
+    transition: background .15s;
+}
+.calc-btn-clear {
+    grid-column: span 2;
+    background: rgba(136, 19, 55, .4);
+    color: #fda4af !important;
+    border: 1px solid rgba(136, 19, 55, .35) !important;
+}
+.calc-btn-clear:hover { background: rgba(136, 19, 55, .6); }
+
+.calc-btn-bs {
+    background: rgba(30, 41, 59, .8);
+    color: #cbd5e1 !important;
+}
+.calc-btn-bs:hover { background: #334155; }
+
+.calc-btn-op {
+    background: rgba(12, 74, 110, .5);
+    color: #7dd3fc !important;
+    border: 1px solid rgba(12, 74, 110, .35) !important;
+}
+.calc-btn-op:hover { background: rgba(12, 74, 110, .7); }
+
+.calc-btn-num {
+    background: #0f172a;
+}
+.calc-btn-num:hover { background: #1e293b; }
+
+.calc-btn-zero { grid-column: span 2; }
+
+.calc-btn-eq {
+    background: #0284c7;
+    color: #fff !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, .3);
+}
+.calc-btn-eq:hover { background: #0ea5e9; }
+
+.pin-hint {
+    font-size: .68rem;
+    color: #475569;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* ==================== VAULT APP ==================== */
+#vault-app {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+#vault-app.visible {
+    display: flex;
+}
+
+/* ---------- HEADER ---------- */
+.vault-header {
+    background: rgba(9, 11, 18, .95);
+    border-bottom: 1px solid rgba(12, 74, 110, .35);
+    padding: .625rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    z-index: 40;
+    flex-wrap: wrap;
+}
+.vault-header .left {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-shrink: 0;
+}
+.vault-header .pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f43f5e;
+    box-shadow: 0 0 8px #f43f5e;
+    animation: pulse-dot 1.5s infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+}
+.vault-header .title {
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: #38bdf8;
+}
+.vault-header .title small {
+    font-size: .7rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+.header-actions button,
+.header-actions label {
+    padding: .375rem .75rem;
+    border-radius: .5rem;
+    font-size: .7rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    border: 1px solid;
+}
+.btn-add {
+    background: rgba(2, 132, 199, .15);
+    color: #7dd3fc;
+    border-color: rgba(14, 165, 233, .35) !important;
+}
+.btn-add:hover { background: rgba(2, 132, 199, .3); }
+
+.btn-link {
+    background: rgba(190, 18, 60, .15);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, .35) !important;
+}
+.btn-link:hover { background: rgba(190, 18, 60, .3); }
+.btn-link.active {
+    outline: 2px solid #f43f5e;
+    outline-offset: 1px;
+}
+
+.btn-secondary {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-color: #334155 !important;
+}
+.btn-secondary:hover { background: #334155; }
+
+.btn-lock {
+    background: rgba(217, 119, 6, .15);
+    color: #fcd34d;
+    border-color: rgba(245, 158, 11, .35) !important;
+}
+.btn-lock:hover { background: rgba(217, 119, 6, .3); }
+
+/* Кнопка выдвижной панели (мобильная) */
+.btn-sidebar-toggle {
+    display: none;
+    background: rgba(30, 41, 59, .8);
+    color: #cbd5e1;
+    border-color: #334155 !important;
+}
+
+/* ---------- РАБОЧАЯ ОБЛАСТЬ ---------- */
+.workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Доска */
+#board-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden; /* панорамирование вручную */
+    background-color: #07080d;
+    background-image:
+        radial-gradient(rgba(56, 189, 248, 0.14) 1px, transparent 1px),
+        radial-gradient(rgba(244, 63, 94, 0.08) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: 0 0, 16px 16px;
+    touch-action: none; /* перехватываем жесты сами */
+    cursor: grab;
+}
+#board-container.panning {
+    cursor: grabbing;
+}
+
+#board-canvas {
+    position: absolute;
+    width: 2400px;
+    height: 1800px;
+    top: 0;
+    left: 0;
+    will-change: transform;
+}
+
+#strings-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+#cards-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+}
+
+/* ---------- КАРТОЧКА УЛИКИ ---------- */
+.evidence-card {
+    position: absolute;
+    width: 240px;
+    background: rgba(13, 16, 26, 0.94);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7),
+                0 0 12px rgba(56, 189, 248, 0.15);
+    cursor: grab;
+    transition: box-shadow .2s, border-color .2s;
+    z-index: 10;
+    padding: .875rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    touch-action: none; /* предотвращаем скролл и выделение при тач-drag */
+}
+.evidence-card.dragging {
+    cursor: grabbing;
+    z-index: 30;
+    border-color: #f43f5e;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .85),
+                0 0 20px rgba(244, 63, 94, .35);
+}
+.evidence-card.selected-for-link {
+    border: 2px solid #f43f5e;
+    box-shadow: 0 0 22px rgba(244, 63, 94, 0.6);
+}
+
+.card-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+}
+.card-badge {
+    padding: .125rem .5rem;
+    font-size: .625rem;
+    border-radius: .25rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid;
+}
+.badge-cyan  { background: rgba(14, 165, 233, .15); color: #7dd3fc; border-color: rgba(14, 165, 233, .35); }
+.badge-rose  { background: rgba(244, 63, 94, .15);  color: #fda4af; border-color: rgba(244, 63, 94, .35); }
+.badge-amber { background: rgba(245, 158, 11, .15); color: #fcd34d; border-color: rgba(245, 158, 11, .35); }
+
+.pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #f43f5e;
+    box-shadow: 0 0 10px #f43f5e;
+    border: 2px solid #fff;
+    transition: transform .15s;
+    flex-shrink: 0;
+}
+.pin-dot:hover { transform: scale(1.3); }
+
+.card-delete {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: .75rem;
+    padding: .15rem .25rem;
+    font-family: inherit;
+}
+.card-delete:hover { color: #f43f5e; }
+
+.card-img {
+    width: 100%;
+    height: 128px;
+    object-fit: cover;
+    border-radius: .25rem;
+    border: 1px solid #1e293b;
+    pointer-events: none;
+}
+.card-title {
+    font-size: .75rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    line-height: 1.4;
+}
+.card-desc {
+    font-size: .68rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* ---------- БОКОВАЯ ПАНЕЛЬ ---------- */
+.sidebar {
+    width: 256px;
+    background: #090b12;
+    border-left: 1px solid rgba(30, 41, 59, .6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    padding: 1rem;
+    flex-shrink: 0;
+    z-index: 30;
+    transition: transform .3s ease;
+}
+
+.sidebar-section { margin-bottom: 1rem; }
+.sidebar-heading {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #64748b;
+    margin-bottom: .5rem;
+}
+.stat-box {
+    background: #0d111c;
+    border: 1px solid #1e293b;
+    border-radius: .5rem;
+    padding: .75rem;
+}
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: .7rem;
+    padding: .2rem 0;
+}
+.stat-label { color: #64748b; }
+.stat-value-cyan   { color: #38bdf8; font-weight: 700; }
+.stat-value-rose   { color: #fb7185; font-weight: 700; }
+.stat-value-green  { color: #34d399; }
+
+.help-list {
+    list-style: none;
+    font-size: .68rem;
+    color: #94a3b8;
+    line-height: 1.8;
+}
+.help-list strong { color: #e2e8f0; }
+.help-list .hl-rose { color: #fb7185; }
+.help-list .hl-cyan { color: #38bdf8; }
+
+.pin-change-row {
+    display: flex;
+    gap: .375rem;
+}
+.pin-change-row input {
+    flex: 1;
+    background: #06080e;
+    border: 1px solid #334155;
+    border-radius: .25rem;
+    padding: .375rem .625rem;
+    font-size: .7rem;
+    color: #fff;
+    font-family: inherit;
+    outline: none;
+}
+.pin-change-row input:focus { border-color: #0ea5e9; }
+.pin-change-row button {
+    padding: .375rem .625rem;
+    background: #0369a1;
+    color: #fff;
+    border: none;
+    border-radius: .25rem;
+    font-size: .7rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+.pin-change-row button:hover { background: #0284c7; }
+
+.danger-zone {
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(30, 41, 59, .6);
+}
+.danger-zone p {
+    font-size: .625rem;
+    color: #64748b;
+    margin-bottom: .5rem;
+}
+.btn-danger {
+    width: 100%;
+    padding: .5rem .75rem;
+    background: rgba(136, 19, 55, .5);
+    color: #fda4af;
+    border: 1px solid rgba(190, 18, 60, .45);
+    border-radius: .5rem;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+}
+.btn-danger:hover {
+    background: #9f1239;
+    color: #fff;
+}
+
+/* ---------- BACKDROP для мобильной шторки ---------- */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 29;
+}
+.sidebar-backdrop.visible { display: block; }
+
+/* ---------- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ УЛИКИ ---------- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, .8);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.modal-overlay.visible {
+    display: flex;
+}
+.modal-box {
+    background: #0d1019;
+    border-radius: .75rem;
+    width: 100%;
+    max-width: 420px;
+    padding: 1.25rem;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.modal-header h3 {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+.modal-close {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+.modal-close:hover { color: #fff; }
+
+.form-group { margin-bottom: .75rem; }
+.form-group label {
+    display: block;
+    font-size: .7rem;
+    color: #94a3b8;
+    margin-bottom: .25rem;
+}
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    background: #06080e;
+    border: 1px solid #334155;
+    border-radius: .5rem;
+    padding: .5rem .75rem;
+    font-size: .75rem;
+    color: #fff;
+    font-family: inherit;
+    outline: none;
+}
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #0ea5e9;
+}
+.form-group input[type="file"] {
+    font-size: .7rem;
+    color: #94a3b8;
+}
+.form-group input[type="file"]::file-selector-button {
+    margin-right: .75rem;
+    padding: .375rem .75rem;
+    border-radius: .5rem;
+    border: none;
+    font-size: .7rem;
+    font-weight: 600;
+    background: rgba(12, 74, 110, .4);
+    color: #7dd3fc;
+    cursor: pointer;
+    font-family: inherit;
+}
+.form-group input[type="file"]::file-selector-button:hover {
+    background: rgba(12, 74, 110, .6);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    padding-top: .5rem;
+}
+.modal-footer button {
+    padding: .5rem 1rem;
+    border-radius: .5rem;
+    font-size: .75rem;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+}
+.btn-modal-cancel {
+    background: #1e293b;
+    color: #cbd5e1;
+}
+.btn-modal-cancel:hover { background: #334155; }
+.btn-modal-save {
+    background: #0284c7;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, .2);
+}
+.btn-modal-save:hover { background: #0ea5e9; }
+
+/* ==================== MOBILE FIRST / RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .vault-header {
+        padding: .5rem .625rem;
+        gap: .5rem;
+    }
+    .vault-header .title { font-size: .75rem; }
+    .header-actions { gap: .35rem; }
+    .header-actions button,
+    .header-actions label { font-size: .62rem; padding: .3rem .5rem; }
+
+    /* Показываем кнопку-гамбургер для шторки */
+    .btn-sidebar-toggle {
+        display: inline-flex;
+    }
+
+    /* Шторка: выезжает справа */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
+        transform: translateX(100%);
+        z-index: 35;
+        box-shadow: -6px 0 30px rgba(0,0,0,.7);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 420px) {
+    .calc-box { max-width: 100%; padding: 1rem; }
+    .calc-display { font-size: 1.5rem; }
+    .calc-grid { gap: .4rem; font-size: 1rem; }
+    .calc-grid button { padding: .6rem 0; }
+
+    .header-actions button,
+    .header-actions label { font-size: .58rem; padding: .25rem .4rem; }
+
+    .modal-box { padding: 1rem; }
+    .modal-header h3 { font-size: .72rem; }
+}
+
+@media (max-width: 360px) {
+    .vault-header { padding: .4rem .5rem; }
+    .vault-header .title { font-size: .68rem; }
+    .header-actions { gap: .25rem; }
+    .header-actions button,
+    .header-actions label { font-size: .55rem; padding: .2rem .35rem; }
+}
