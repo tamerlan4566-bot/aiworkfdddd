@@ -5,10 +5,13 @@
 // ==================== СОСТОЯНИЕ ====================
 const STORAGE_KEY_DATA     = 'mind_palace_encrypted_v1';
 const STORAGE_KEY_PIN_HASH = 'mind_palace_pin_hash_v1';
-const DEFAULT_PIN          = '0000';
+const DEFAULT_PIN          = '5477';
 
 let currentPin          = null;
 let vaultData           = { cards: [], links: [] };
+let currentViewMode     = 'board'; // 'board' или 'notes'
+let notesFilterTag      = 'all';
+let notesSearchQuery    = '';
 let linkMode            = false;
 let firstSelectedCardId = null;
 let calcInput           = '';
@@ -21,8 +24,10 @@ let _panState = null;    // { startX, startY, origScrollX, origScrollY }
 
 // ==================== ИНИЦИАЛИЗАЦИЯ ====================
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализируем хэш PIN по умолчанию при первом запуске
-    if (!localStorage.getItem(STORAGE_KEY_PIN_HASH)) {
+    // Инициализируем хэш PIN по умолчанию при первом запуске (или обновляем старый дефолтный 0000)
+    const existingHash = localStorage.getItem(STORAGE_KEY_PIN_HASH);
+    const oldDefaultHash = CryptoJS.SHA256('0000').toString();
+    if (!existingHash || existingHash === oldDefaultHash) {
         localStorage.setItem(STORAGE_KEY_PIN_HASH, CryptoJS.SHA256(DEFAULT_PIN).toString());
     }
 
@@ -33,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     bindBoardPanning();
     bindSidebarToggle();
     bindModalButtons();
+    bindViewSwitcher();
+    bindNotesEvents();
 
     // Регистрация PWA Service Worker
     registerServiceWorker();
@@ -154,7 +161,48 @@ function unlockVault(pin) {
     document.getElementById('calculator-facade').classList.add('hidden');
     const app = document.getElementById('vault-app');
     app.classList.add('visible');
-    renderBoard();
+
+    // Эффект кинематографичной дешифровки перед показом
+    playDecryptAnimation(() => {
+        if (currentViewMode === 'board') {
+            renderBoard();
+        } else {
+            renderNotes();
+        }
+    });
+}
+
+function playDecryptAnimation(callback) {
+    const overlay = document.getElementById('decrypt-overlay');
+    const matrixText = document.getElementById('decrypt-matrix-text');
+    const progressBar = document.getElementById('decrypt-progress-bar');
+    if (!overlay || !matrixText || !progressBar) {
+        if (callback) callback();
+        return;
+    }
+
+    overlay.classList.remove('hidden');
+    let progress = 0;
+    const chars = '0123456789ABCDEF!@#$%^&*<>~[]{}';
+
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+
+        let randomStr = '';
+        for (let i = 0; i < 35; i++) {
+            randomStr += chars[Math.floor(Math.random() * chars.length)];
+        }
+        matrixText.textContent = randomStr;
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                if (callback) callback();
+            }, 180);
+        }
+    }, 40);
 }
 
 function lockVault() {
@@ -511,6 +559,7 @@ function saveNewCard() {
         });
         saveVault();
         renderBoard();
+        if (currentViewMode === 'notes') renderNotes();
         closeAddModal();
     };
 
@@ -612,6 +661,111 @@ function updateStats() {
     const statLinks = document.getElementById('stat-links');
     if (statCards) statCards.textContent = vaultData.cards.length;
     if (statLinks) statLinks.textContent = vaultData.links.length;
+}
+
+// ==================== ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ (ДОСКА / НЕОНОВЫЕ ЗАМЕТКИ) ====================
+function bindViewSwitcher() {
+    const btnBoard = document.getElementById('view-mode-board');
+    const btnNotes = document.getElementById('view-mode-notes');
+    const boardContainer = document.getElementById('board-container');
+    const notesContainer = document.getElementById('notes-container');
+    const linkBtn = document.getElementById('link-mode-btn');
+
+    if (!btnBoard || !btnNotes) return;
+
+    btnBoard.addEventListener('click', () => {
+        currentViewMode = 'board';
+        btnBoard.classList.add('active');
+        btnNotes.classList.remove('active');
+        boardContainer.classList.remove('hidden');
+        notesContainer.classList.add('hidden');
+        if (linkBtn) linkBtn.style.display = 'inline-flex';
+        renderBoard();
+    });
+
+    btnNotes.addEventListener('click', () => {
+        currentViewMode = 'notes';
+        btnNotes.classList.add('active');
+        btnBoard.classList.remove('active');
+        notesContainer.classList.remove('hidden');
+        boardContainer.classList.add('hidden');
+        if (linkBtn) linkBtn.style.display = 'none';
+        renderNotes();
+    });
+}
+
+function bindNotesEvents() {
+    const searchInput = document.getElementById('notes-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            notesSearchQuery = e.target.value.toLowerCase().trim();
+            renderNotes();
+        });
+    }
+
+    const filterContainer = document.querySelector('.notes-filter-tags');
+    if (filterContainer) {
+        filterContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tag-filter-btn');
+            if (!btn) return;
+            filterContainer.querySelectorAll('.tag-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            notesFilterTag = btn.dataset.tag || 'all';
+            renderNotes();
+        });
+    }
+}
+
+function renderNotes() {
+    const grid = document.getElementById('notes-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const filtered = vaultData.cards.filter(card => {
+        const matchesTag = (notesFilterTag === 'all' || card.tag === notesFilterTag);
+        const matchesSearch = !notesSearchQuery || 
+            (card.title && card.title.toLowerCase().includes(notesSearchQuery)) ||
+            (card.desc && card.desc.toLowerCase().includes(notesSearchQuery));
+        return matchesTag && matchesSearch;
+    });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px; font-size: 13px;">Заметок не найдено. Нажмите «+ Добавить», чтобы создать первую!</div>';
+        return;
+    }
+
+    filtered.forEach(card => {
+        const el = document.createElement('div');
+        el.className = `note-card tag-${card.tag || 'cyan'}`;
+        
+        const tagLabels = {
+            cyan: '🔵 Факт',
+            rose: '🔴 Улика',
+            amber: '🟡 Зацепка'
+        };
+
+        el.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size: 10px; font-weight:700; text-transform:uppercase; color: ${card.tag === 'rose' ? '#f43f5e' : card.tag === 'amber' ? '#f59e0b' : '#38bdf8'};">
+                    ${tagLabels[card.tag] || '🔵 Факт'}
+                </span>
+                <button class="delete-note-btn" data-id="${card.id}" style="background:none; border:none; color:#64748b; cursor:pointer; font-size:12px; padding:2px 6px;">✕</button>
+            </div>
+            ${card.image ? `<img src="${card.image}" style="width:100%; height:140px; object-fit:cover; border-radius:6px; border:1px solid #1e293b; margin:4px 0;">` : ''}
+            <h3 style="font-size:13px; font-weight:700; color:#f1f5f9; margin-top:2px;">${escapeHtml(card.title)}</h3>
+            <p style="font-size:11px; color:#94a3b8; line-height:1.5; white-space:pre-wrap;">${escapeHtml(card.desc)}</p>
+        `;
+
+        el.querySelector('.delete-note-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteCard(e, card.id);
+            renderNotes();
+        });
+
+        grid.appendChild(el);
+    });
+
+    updateStats();
 }
 
 function escapeHtml(str) {
