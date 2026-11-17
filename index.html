@@ -20,11 +20,6 @@
     <!-- ==================== ФАСАД: КАЛЬКУЛЯТОР ==================== -->
     <div id="calculator-facade">
         <div class="calc-box neon-border">
-            <div class="calc-topbar">
-                <span>CALC // SYS.v4.2</span>
-                <span class="status" id="calc-status">STD MODE</span>
-            </div>
-
             <!-- Экран -->
             <div class="calc-screen">
                 <div class="calc-history" id="calc-history"></div>
@@ -56,8 +51,6 @@
                 <button data-calc="." class="calc-btn-num">.</button>
                 <button data-calc="eval" class="calc-btn-eq">=</button>
             </div>
-
-            <p class="pin-hint">Введите 4-значный PIN и нажмите «=» для входа</p>
         </div>
     </div>
 
@@ -67,13 +60,18 @@
         <header class="vault-header">
             <div class="left">
                 <div class="pulse-dot"></div>
-                <h1 class="title neon-text-cyan">
+                <h1 class="title neon-text-cyan" id="app-title">
                     ЧЕРТОГИ РАЗУМА <small>[AES-256]</small>
                 </h1>
+                <!-- Переключатель режима: Доска / Неоновые Заметки -->
+                <div class="view-switcher">
+                    <button id="view-mode-board" class="view-btn active" title="Интерактивная детективная доска">📌 Доска</button>
+                    <button id="view-mode-notes" class="view-btn" title="Сетка неоновых заметок">📝 Заметки</button>
+                </div>
             </div>
 
             <div class="header-actions">
-                <button id="btn-open-modal" class="btn-add">+ Улика</button>
+                <button id="btn-open-modal" class="btn-add">+ Добавить</button>
                 <button id="link-mode-btn" class="btn-link">🔗 Нить: ВЫКЛ</button>
                 <button id="btn-export" class="btn-secondary" title="Скачать зашифрованный JSON-бэкап">⬇ Бэкап</button>
                 <label class="btn-secondary" title="Загрузить JSON-бэкап" style="cursor:pointer">
@@ -85,14 +83,37 @@
             </div>
         </header>
 
+        <!-- Оверлей расшифровки данных (Matrix / Cyberpunk эффект) -->
+        <div id="decrypt-overlay" class="decrypt-overlay hidden">
+            <div class="decrypt-box neon-border">
+                <div class="decrypt-glitch neon-text-cyan">DECRYPTING AES-256...</div>
+                <div class="decrypt-matrix" id="decrypt-matrix-text">01010100 01010010 01010101 01010011 01010100</div>
+                <div class="decrypt-bar"><div class="decrypt-progress" id="decrypt-progress-bar"></div></div>
+            </div>
+        </div>
+
         <!-- Рабочая область -->
         <div class="workspace">
-            <!-- Доска -->
+            <!-- Режим 1: Интерактивная доска -->
             <div id="board-container">
                 <div id="board-canvas">
                     <svg id="strings-layer"></svg>
                     <div id="cards-layer"></div>
                 </div>
+            </div>
+
+            <!-- Режим 2: Неоновые заметки (Сетка карточек с быстрым поиском) -->
+            <div id="notes-container" class="notes-container hidden">
+                <div class="notes-toolbar">
+                    <input type="text" id="notes-search-input" placeholder="🔍 Поиск по зашифрованным заметкам..." class="notes-search">
+                    <div class="notes-filter-tags">
+                        <button class="tag-filter-btn active" data-tag="all">Все</button>
+                        <button class="tag-filter-btn tag-cyan" data-tag="cyan">🔵 Факты</button>
+                        <button class="tag-filter-btn tag-rose" data-tag="rose">🔴 Улики</button>
+                        <button class="tag-filter-btn tag-amber" data-tag="amber">🟡 Зацепки</button>
+                    </div>
+                </div>
+                <div id="notes-grid" class="notes-grid"></div>
             </div>
 
             <!-- Затемнение фона за шторкой (мобильное) -->
