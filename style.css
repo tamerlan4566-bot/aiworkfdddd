@@ -51,7 +51,178 @@ body {
     background: #38bdf8;
 }
 
-/* ==================== ФАСАД: КАЛЬКУЛЯТОР ==================== */
+/* ==================== ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА & НЕОНОВЫЕ ЗАМЕТКИ ==================== */
+.view-switcher {
+    display: flex;
+    background: #06080e;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 2px;
+    margin-left: 12px;
+    gap: 2px;
+}
+.view-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+.view-btn:hover {
+    color: #38bdf8;
+}
+.view-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+/* ОВЕРЛЕЙ РАСШИФРОВКИ */
+.decrypt-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: rgba(5, 5, 8, 0.94);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+.decrypt-overlay.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+.decrypt-box {
+    background: #0d1019;
+    padding: 24px 32px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+}
+.decrypt-glitch {
+    font-size: 14px;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+.decrypt-matrix {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #0ea5e9;
+    margin-bottom: 16px;
+    word-break: break-all;
+    min-height: 32px;
+    opacity: 0.85;
+}
+.decrypt-bar {
+    width: 100%;
+    height: 4px;
+    background: #1e293b;
+    border-radius: 2px;
+    overflow: hidden;
+}
+.decrypt-progress {
+    width: 0%;
+    height: 100%;
+    background: #38bdf8;
+    box-shadow: 0 0 12px #38bdf8;
+    transition: width 0.08s linear;
+}
+
+/* КОНТЕЙНЕР НЕОНОВЫХ ЗАМЕТОК */
+.notes-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 24px;
+    overflow-y: auto;
+    background: #07080d;
+}
+.notes-container.hidden {
+    display: none;
+}
+.notes-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.notes-search {
+    flex: 1;
+    min-width: 220px;
+    background: #0d1019;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: #f8fafc;
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.notes-search:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+.notes-filter-tags {
+    display: flex;
+    gap: 6px;
+}
+.tag-filter-btn {
+    background: #0d1019;
+    border: 1px solid #1e293b;
+    color: #94a3b8;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+.tag-filter-btn:hover, .tag-filter-btn.active {
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+.tag-filter-btn.tag-rose.active { border-color: #f43f5e; color: #f43f5e; }
+.tag-filter-btn.tag-amber.active { border-color: #f59e0b; color: #f59e0b; }
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+.note-card {
+    background: rgba(13, 16, 26, 0.92);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.note-card:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7), 0 0 15px rgba(56, 189, 248, 0.15);
+}
+.note-card.tag-rose { border-color: rgba(244, 63, 94, 0.4); }
+.note-card.tag-rose:hover { border-color: #f43f5e; box-shadow: 0 8px 25px rgba(0,0,0,0.7), 0 0 15px rgba(244, 63, 94, 0.25); }
+.note-card.tag-amber { border-color: rgba(245, 158, 11, 0.4); }
+.note-card.tag-amber:hover { border-color: #f59e0b; box-shadow: 0 8px 25px rgba(0,0,0,0.7), 0 0 15px rgba(245, 158, 11, 0.25); }
 #calculator-facade {
     position: fixed;
     inset: 0;
