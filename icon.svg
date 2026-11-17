@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="108" fill="#07080d"/>
+  <rect x="24" y="24" width="464" height="464" rx="88" fill="#0d1019" stroke="#38bdf8" stroke-opacity="0.35" stroke-width="4"/>
+  <!-- Display Window -->
+  <rect x="76" y="80" width="360" height="90" rx="16" fill="#06080e" stroke="#1e293b" stroke-width="3"/>
+  <text x="410" y="142" font-family="monospace" font-size="44" font-weight="700" fill="#38bdf8" text-anchor="end">42.0</text>
+  <!-- Buttons Matrix -->
+  <!-- Row 1 -->
+  <rect x="76" y="200" width="75" height="55" rx="12" fill="#881337" fill-opacity="0.6"/>
+  <text x="113" y="238" font-family="monospace" font-size="24" font-weight="700" fill="#fda4af" text-anchor="middle">C</text>
+  <rect x="171" y="200" width="75" height="55" rx="12" fill="#1e293b"/>
+  <text x="208" y="238" font-family="monospace" font-size="24" font-weight="700" fill="#94a3b8" text-anchor="middle">⌫</text>
+  <rect x="266" y="200" width="75" height="55" rx="12" fill="#0c4a6e" fill-opacity="0.6"/>
+  <text x="303" y="238" font-family="monospace" font-size="24" font-weight="700" fill="#7dd3fc" text-anchor="middle">÷</text>
+  <rect x="361" y="200" width="75" height="55" rx="12" fill="#0c4a6e" fill-opacity="0.6"/>
+  <text x="398" y="238" font-family="monospace" font-size="24" font-weight="700" fill="#7dd3fc" text-anchor="middle">×</text>
+  <!-- Row 2 -->
+  <rect x="76" y="270" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="113" y="308" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">7</text>
+  <rect x="171" y="270" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="208" y="308" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">8</text>
+  <rect x="266" y="270" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="303" y="308" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">9</text>
+  <rect x="361" y="270" width="75" height="55" rx="12" fill="#0c4a6e" fill-opacity="0.6"/>
+  <text x="398" y="308" font-family="monospace" font-size="24" font-weight="700" fill="#7dd3fc" text-anchor="middle">−</text>
+  <!-- Row 3 -->
+  <rect x="76" y="340" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="113" y="378" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">4</text>
+  <rect x="171" y="340" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="208" y="378" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">5</text>
+  <rect x="266" y="340" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="303" y="378" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">6</text>
+  <rect x="361" y="340" width="75" height="55" rx="12" fill="#0c4a6e" fill-opacity="0.6"/>
+  <text x="398" y="378" font-family="monospace" font-size="24" font-weight="700" fill="#7dd3fc" text-anchor="middle">+</text>
+  <!-- Row 4 -->
+  <rect x="76" y="410" width="170" height="55" rx="12" fill="#0f172a"/>
+  <text x="161" y="448" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">0</text>
+  <rect x="266" y="410" width="75" height="55" rx="12" fill="#0f172a"/>
+  <text x="303" y="448" font-family="monospace" font-size="24" fill="#f1f5f9" text-anchor="middle">.</text>
+  <rect x="361" y="410" width="75" height="55" rx="12" fill="#0284c7"/>
+  <text x="398" y="448" font-family="monospace" font-size="24" font-weight="700" fill="#ffffff" text-anchor="middle">=</text>
+  <!-- Subtle Neon Detective String Accent in background -->
+  <path d="M 120 120 Q 256 160 400 120" stroke="#f43f5e" stroke-width="2.5" fill="none" stroke-opacity="0.7"/>
+</svg>
